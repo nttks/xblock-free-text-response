@@ -23,6 +23,7 @@ class FacebookOAuth2(BaseOAuth2):
     ACCESS_TOKEN_URL = 'https://graph.facebook.com/v2.3/oauth/access_token'
     REVOKE_TOKEN_URL = 'https://graph.facebook.com/v2.3/{uid}/permissions'
     REVOKE_TOKEN_METHOD = 'DELETE'
+    DEFAULT_SCOPE = ['public_profile', 'email']
     USER_DATA_URL = 'https://graph.facebook.com/v2.3/me'
     EXTRA_DATA = [
         ('id', 'id'),
@@ -36,8 +37,9 @@ class FacebookOAuth2(BaseOAuth2):
             response.get('first_name', ''),
             response.get('last_name', '')
         )
-        return {'username': response.get('username', response.get('name')),
-                'email': response.get('email', ''),
+        email = response.get('email', '')
+        return {'username': email.split('@', 1)[0],
+                'email': email,
                 'fullname': fullname,
                 'first_name': first_name,
                 'last_name': last_name}
