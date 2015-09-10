@@ -14,7 +14,7 @@ class FacebookOAuth2Test(OAuth2Test):
         'token_type': 'bearer'
     })
     user_data_body = json.dumps({
-        'username': 'foobar',
+        'email': 'foobar@example.com',
         'first_name': 'Foo',
         'last_name': 'Bar',
         'verified': True,
