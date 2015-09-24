@@ -77,6 +77,7 @@ Social backends
    flickr
    foursquare
    github
+   github_enterprise
    google
    instagram
    jawbone
@@ -132,6 +133,7 @@ Social backends
    vimeo
    vk
    weibo
+   withings
    wunderlist
    xing
    yahoo
