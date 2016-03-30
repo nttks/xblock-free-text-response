@@ -80,14 +80,9 @@ class UserIsActiveTest(unittest.TestCase):
 
 class SlugifyTest(unittest.TestCase):
     def test_slugify_formats(self):
-        if PY3:
-            self.assertEqual(slugify('FooBar'), 'foobar')
-            self.assertEqual(slugify('Foo Bar'), 'foo-bar')
-            self.assertEqual(slugify('Foo (Bar)'), 'foo-bar')
-        else:
-            self.assertEqual(slugify('FooBar'.decode('utf-8')), 'foobar')
-            self.assertEqual(slugify('Foo Bar'.decode('utf-8')), 'foo-bar')
-            self.assertEqual(slugify('Foo (Bar)'.decode('utf-8')), 'foo-bar')
+        self.assertEqual(slugify('FooBar'), 'foobar')
+        self.assertEqual(slugify('Foo Bar'), 'foo-bar')
+        self.assertEqual(slugify('Foo (Bar)'), 'foo-bar')
 
 
 class BuildAbsoluteURITest(unittest.TestCase):

@@ -130,6 +130,9 @@ def slugify(value):
     """Converts to lowercase, removes non-word characters (alphanumerics
     and underscores) and converts spaces to hyphens. Also strips leading
     and trailing whitespace."""
+    # convert str of Python2 to unicode
+    if six.PY2 and not isinstance(value, six.text_type):
+        value = six.text_type(value)
     value = unicodedata.normalize('NFKD', value) \
                        .encode('ascii', 'ignore') \
                        .decode('ascii')

@@ -161,6 +161,22 @@ class SluggedUsernameTest(BaseActionTest):
         })
         self.do_login()
 
+    def test_no_username(self):
+        """
+        Tests for backend that does not return email.
+        There is a case in which email can not be acquired(e.g Facebook).
+        """
+        _user_data_body = json.loads(self.user_data_body)
+        del _user_data_body['email']
+        del _user_data_body['login']
+
+        self.strategy.set_settings({
+            'SOCIAL_AUTH_CLEAN_USERNAMES': False,
+            'SOCIAL_AUTH_SLUGIFY_USERNAMES': True
+        })
+        # Verify that exception does not occur
+        self.do_login(after_complete_checks=False, user_data_body=json.dumps(_user_data_body))
+
 
 class RepeatedUsernameTest(BaseActionTest):
     def test_random_username(self):
