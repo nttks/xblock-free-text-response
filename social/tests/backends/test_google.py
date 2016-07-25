@@ -1,5 +1,6 @@
 import datetime
 import json
+import unittest
 
 from httpretty import HTTPretty
 
@@ -165,6 +166,7 @@ class GoogleOAuth1Test(OAuth1Test):
 JANRAIN_NONCE = datetime.datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ')
 
 
+@unittest.skip("Unsupported")
 class GoogleOpenIdTest(OpenIdTest):
     backend_path = 'social.backends.google.GoogleOpenId'
     expected_username = 'FooBar'

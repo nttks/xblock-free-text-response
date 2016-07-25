@@ -1,4 +1,5 @@
 import datetime
+import unittest
 
 from httpretty import HTTPretty
 
@@ -11,6 +12,7 @@ from social.tests.backends.open_id import OpenIdTest
 JANRAIN_NONCE = datetime.datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ')
 
 
+@unittest.skip("Unsupported")
 class LiveJournalOpenIdTest(OpenIdTest):
     backend_path = 'social.backends.livejournal.LiveJournalOpenId'
     expected_username = 'foobar'
