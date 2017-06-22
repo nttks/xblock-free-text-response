@@ -43,7 +43,7 @@ class LoginActionTest(BaseActionTest):
         })
         User.set_active(False)
         redirect = self.do_login(after_complete_checks=False)
-        self.assertEqual(redirect.url, '/inactive')
+        self.assertEqual(redirect.url, '/inactive?next=/notice_unactivated')
 
     def test_invalid_user(self):
         self.strategy.set_settings({

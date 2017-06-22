@@ -47,6 +47,16 @@ def do_complete(backend, login, user=None, redirect_name='next',
     redirect_value = backend.strategy.session_get(redirect_name, '') or \
                      data.get(redirect_name, '')
 
+    # Note: redirect_value is set to '/account/finish_auth?course_id=xxx&enrollment_action=enroll&next=%2Fnotice_unactivated'
+    #       in cases such as the ones specified below:
+    #       1) Enroll audit course from course about page.
+    #       2) Link to third party auth application.
+    #       3) Register account.
+    #       If so, do not overwrite it in order to continue the subsequent process.
+    if user and not user_is_active(user) and 'notice_unactivated' not in redirect_value:
+        # Redirect unactivated user to notice_unactivated
+        redirect_value = '/notice_unactivated'
+
     user_model = backend.strategy.storage.user.user_model()
     if user and not isinstance(user, user_model):
         return user
