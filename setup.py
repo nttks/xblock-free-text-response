@@ -57,6 +57,7 @@ setup(
     package_data={
         "freetextresponse": [
             'public/*',
+            'template/*',
         ],
     },
     classifiers=[
