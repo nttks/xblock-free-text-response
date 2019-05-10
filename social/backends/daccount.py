@@ -16,7 +16,7 @@ class DAccountOpenIdConnect(OpenIdConnectAuth):
     ACCESS_TOKEN_URL = 'https://conf.uw.docomo.ne.jp/token'
     USERINFO_URL = 'https://conf.uw.docomo.ne.jp/userinfo'
     ACCESS_TOKEN_METHOD = 'POST'
-    DEFAULT_SCOPE = ['openid', 'profile1']
+    DEFAULT_SCOPE = ['openid', 'profile1', 'dpoint_number']
     RESPONSE_TYPE = 'code'
     REDIRECT_STATE = False
     ID_TOKEN_ISSUER = 'https://conf.uw.docomo.ne.jp/'
