@@ -1,5 +1,5 @@
 {% load i18n %}
-<div class="freetextresponse xmodule_display xmodule_CapaModule problem">
+<div class="freetextresponse xmodule_display xmodule_CapaModule problem" data-update-attendance-status-url="{{ update_attendance_status }}">
     <h2 class="problem-header">{{ display_name }}</h2>
     <div class="problem-progress">{{ problem_progress }}</div>
     <p>{{ prompt|safe }}</p>

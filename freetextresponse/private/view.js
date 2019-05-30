@@ -16,6 +16,7 @@ function FreeTextResponseView(runtime, element) {
     var url = runtime.handlerUrl(element, 'submit');
     var urlSave = runtime.handlerUrl(element, 'save_reponse');
 
+    var deferred = null;
     var xblockId = $element.attr('data-usage-id');
     var cachedAnswerId = xblockId + '_cached_answer';
     var problemProgressId = xblockId + '_problem_progress';
@@ -44,6 +45,9 @@ function FreeTextResponseView(runtime, element) {
             message: 'Submitting...',
             state: 'start'
         });
+
+        deferred = new $.Deferred();
+
         $.ajax(url, {
             type: 'POST',
             data: JSON.stringify({
@@ -66,11 +70,29 @@ function FreeTextResponseView(runtime, element) {
                 runtime.notify('submit', {
                     state: 'end'
                 });
+
+                deferred.resolve();
             },
             error: function buttonSubmitOnError() {
                 runtime.notify('error', {});
             }
         });
+
+        deferred.promise().then(function() {
+            // Update attendance status
+            var updateAttendanceStatusUrl = ($('.freetextresponse', $element).data('update-attendance-status-url') || '')
+                .replace('{}', $element.data('course-id'));
+            if (updateAttendanceStatusUrl) {
+                $.ajax(updateAttendanceStatusUrl, {
+                    type: 'POST',
+                    headers: {'X-CSRFToken': $.cookie('csrftoken')},
+                    error: function() {
+                        console.log('Error update attendance status');
+                    }
+                });
+            }
+        });
+
         return false;
     });
 
