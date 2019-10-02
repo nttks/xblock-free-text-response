@@ -4,7 +4,6 @@ This is the core logic for the Free-text Response XBlock
 from enum import Enum
 from django.db import IntegrityError
 from django.template.context import Context
-from django.template.loader import get_template
 from django.utils.translation import ungettext
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext
@@ -17,16 +16,28 @@ from xblock.fields import Scope
 from xblock.fields import String
 from xblock.fragment import Fragment
 from xblock.validation import ValidationMessage
+from xblockutils.resources import ResourceLoader
 from xblockutils.studio_editable import StudioEditableXBlockMixin
-from .mixins import EnforceDueDates
+from .mixins import EnforceDueDates, MissingDataFetcherMixin
+
+
+MAX_RESPONSES = 3
 
 
 @XBlock.needs("i18n")
-class FreeTextResponse(EnforceDueDates, StudioEditableXBlockMixin, XBlock):
+class FreeTextResponse(
+        EnforceDueDates,
+        MissingDataFetcherMixin,
+        StudioEditableXBlockMixin,
+        XBlock,
+):
     #  pylint: disable=too-many-ancestors, too-many-instance-attributes
     """
     Enables instructors to create questions with free-text responses.
     """
+
+    loader = ResourceLoader(__name__)
+
     @staticmethod
     def workbench_scenarios():
         """
@@ -85,6 +96,20 @@ class FreeTextResponse(EnforceDueDates, StudioEditableXBlockMixin, XBlock):
         ),
         default=True,
         scope=Scope.settings,
+    )
+    display_other_student_responses = Boolean(
+        display_name=_('Display Other Student Responses'),
+        help=_(
+            'This will display other student responses to the '
+            'student after they submit their response.'
+        ),
+        default=False,
+        scope=Scope.settings,
+    )
+    displayable_answers = List(
+        default=[],
+        scope=Scope.user_state_summary,
+        help=_('System selected answers to give to students'),
     )
     display_name = String(
         display_name=_('Display Name'),
@@ -212,13 +237,13 @@ class FreeTextResponse(EnforceDueDates, StudioEditableXBlockMixin, XBlock):
         'fullcredit_keyphrases',
         'halfcredit_keyphrases',
         'submitted_message',
+        'display_other_student_responses',
         'saved_message',
     )
 
     def build_fragment(
             self,
-            template,
-            context_dict,
+            rendered_template,
             initialize_js_func,
             additional_css=[],
             additional_js=[],
@@ -227,8 +252,7 @@ class FreeTextResponse(EnforceDueDates, StudioEditableXBlockMixin, XBlock):
         """
         Creates a fragment for display.
         """
-        context = Context(context_dict)
-        fragment = Fragment(template.render(context))
+        fragment = Fragment(rendered_template)
         for item in additional_css:
             url = self.runtime.local_resource_url(self, item)
             fragment.add_css_url(url)
@@ -255,7 +279,7 @@ class FreeTextResponse(EnforceDueDates, StudioEditableXBlockMixin, XBlock):
             (Fragment): The HTML Fragment for this XBlock, which determines the
             general frame of the FreeTextResponse Question.
         """
-
+        display_other_responses = self.display_other_student_responses
         self.runtime.service(self, 'i18n')
         context.update(
             {
@@ -269,18 +293,23 @@ class FreeTextResponse(EnforceDueDates, StudioEditableXBlockMixin, XBlock):
                 'used_attempts_feedback': self._get_used_attempts_feedback(),
                 'visibility_class': self._get_indicator_visibility_class(),
                 'word_count_message': self._get_word_count_message(),
+                'display_other_responses': display_other_responses,
+                'other_responses': self.get_other_answers(),
             }
         )
-        template = get_template('freetextresponse_view.html')
+        template = self.loader.render_django_template(
+            'templates/freetextresponse_view.html',
+            context=Context(context),
+            i18n_service=self.runtime.service(self, 'i18n'),
+        )
         fragment = self.build_fragment(
             template,
-            context,
             initialize_js_func='FreeTextResponseView',
             additional_css=[
-                'public/view.less.min.css',
+                'public/view.css',
             ],
             additional_js=[
-                'public/view.js.min.js',
+                'public/view.js',
             ],
         )
         return fragment
@@ -564,6 +593,9 @@ class FreeTextResponse(EnforceDueDates, StudioEditableXBlockMixin, XBlock):
             # even if word count is invalid.
             self.count_attempts += 1
             self._compute_score()
+            display_other_responses = self.display_other_student_responses
+            if display_other_responses and data.get('can_record_response'):
+                self.store_student_response()
         result = {
             'status': 'success',
             'problem_progress': self._get_problem_progress(),
@@ -574,6 +606,8 @@ class FreeTextResponse(EnforceDueDates, StudioEditableXBlockMixin, XBlock):
             'user_alert': self._get_user_alert(
                 ignore_attempts=True,
             ),
+            'other_responses': self.get_other_answers(),
+            'display_other_responses': self.display_other_student_responses,
             'visibility_class': self._get_indicator_visibility_class(),
         }
         return result
@@ -598,6 +632,53 @@ class FreeTextResponse(EnforceDueDates, StudioEditableXBlockMixin, XBlock):
             'visibility_class': self._get_indicator_visibility_class(),
         }
         return result
+
+    def store_student_response(self):
+        """
+        Submit a student answer to the answer pool by appending the given
+        answer to the end of the list.
+        """
+        # if the answer is wrong, do not display it
+        if self.score != Credit.full.value:
+            return
+
+        student_id = self.get_student_id()
+        # remove any previous answers the student submitted
+        for index, response in enumerate(self.displayable_answers):
+            if response['student_id'] == student_id:
+                del self.displayable_answers[index]
+                break
+
+        self.displayable_answers.append({
+            'student_id': student_id,
+            'answer': self.student_answer,
+        })
+
+        # Want to store extra response so student can still see
+        # MAX_RESPONSES answers if their answer is in the pool.
+        response_index = -(MAX_RESPONSES+1)
+        self.displayable_answers = self.displayable_answers[response_index:]
+
+    def get_other_answers(self):
+        """
+        Returns at most MAX_RESPONSES answers from the pool.
+
+        Does not return answers the student had submitted.
+        """
+        student_id = self.get_student_id()
+        display_other_responses = self.display_other_student_responses
+        shouldnt_show_other_responses = not display_other_responses
+        student_answer_incorrect = self._determine_credit() == Credit.zero
+        if student_answer_incorrect or shouldnt_show_other_responses:
+            return []
+        return_list = [
+            response
+            for response in self.displayable_answers
+            if response['student_id'] != student_id
+        ]
+
+        return_list = return_list[-(MAX_RESPONSES):]
+        return return_list
 
 
 class Credit(Enum):
