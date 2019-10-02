@@ -9,17 +9,11 @@ DATABASES = {
     },
 }
 
+TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
+
 INSTALLED_APPS = (
     'django_nose',
     'freetextresponse',
 )
-
-TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
-
-NOSE_ARGS = [
-    '--with-coverage',
-    '--cover-html',
-    '--cover-erase',
-]
 
 SECRET_KEY = 'freetextresponse_SECRET_KEY'

@@ -6,4 +6,3 @@ node_modules/
 coverage.xml
 .tox/
 .DS_STORE
-.idea/
