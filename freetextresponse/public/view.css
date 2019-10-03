@@ -50,12 +50,44 @@
   height: 40px;
   vertical-align: middle;
   font-weight: 600;
+  background-color: #008CBA;
+  background-image: none;
+  box-shadow: 0 0 0 black;
+  color: #fff;
+  text-shadow: none;
+  text-transform: none;
+}
+
+.freetextresponse .action .save:hover:not(:disabled) {
+  background-color: #006f94;
+  background-image: none;
+  color: #fff;
 }
 
 .freetextresponse .action .check {
   height: 40px;
   vertical-align: middle;
   font-weight: 600;
+  background-color: #43ac6a;
+  background-image: none;
+  border-radius: 3px;
+  border:transparent solid 1px;
+  border-left-width: 0;
+  border-bottom-width: 0;
+  border-right-width: 0;
+  border-top-width: 0;
+  box-shadow: 0 0 0 #666;
+  color: #fff;
+  text-shadow: none;
+  text-transform: none;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.freetextresponse .action .check:hover:not(:disabled) {
+  background-color: #368a55;
+  background-image: none;
+  color: #fff;
 }
 
 .freetextresponse .action .used-attempts-feedback {
