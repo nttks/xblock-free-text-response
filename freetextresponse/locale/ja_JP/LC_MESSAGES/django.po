@@ -16,8 +16,8 @@ msgstr ""
 #: freetextresponse/freetextresponse.py
 msgid "Your response must be between {min} and {max} word."
 msgid_plural "Your response must be between {min} and {max} words."
-msgstr[0] "{min}〜{max}文字以内で記入してください。"
-msgstr[1] "{min}〜{max}文字以内で記入してください。"
+msgstr[0] "{min}〜{max}文字で記入してください。"
+msgstr[1] "{min}〜{max}文字で記入してください。"
 
 #: freetextresponse/freetextresponse.py
 msgid "Invalid Word Count. {word_count_message}"
