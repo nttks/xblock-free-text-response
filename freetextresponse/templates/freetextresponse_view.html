@@ -1,5 +1,7 @@
 {% load i18n %}
-<div class="freetextresponse xmodule_display xmodule_CapaModule problem">
+<div class="freetextresponse xmodule_display xmodule_CapaModule problem"
+     data-update-attendance-status-url="{{ update_attendance_status }}"
+>
     <h2 class="problem-header">{{ display_name }}</h2>
     <div class="problem-progress">{{ problem_progress }}</div>
     <p>{{ prompt|safe }}</p>
@@ -18,8 +20,8 @@
     <div class="capa_alert submission-received">{{ submitted_message }}</div>
     <div class="action">
         {% if not is_past_due %}
-            <button class="check Submit {{ nodisplay_class }}" data-checking="{% trans "Checking..." %}" data-value={% trans "Submit" %}>
-                {% trans "Submit" %}
+            <button class="check Submit {{ nodisplay_class }}" data-checking="{% trans "Checking..." %}" data-value={% trans "Submit Text" %}>
+                {% trans "Submit Text" %}
             </button>
             <button class="save {{ nodisplay_class }}" data-checking="{% trans "Checking..." %}" data-value={% trans "Save" %}>
                 {% trans "Save" %}

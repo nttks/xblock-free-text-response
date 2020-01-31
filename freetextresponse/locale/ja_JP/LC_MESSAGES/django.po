@@ -1,0 +1,42 @@
+# edX translation file.
+# Copyright (C) 2018 edX
+#
+# Translators:
+# ahara121 <aharagacco@gmail.com>, 2018
+msgid ""
+msgstr ""
+"Project-Id-Version: XBlocks\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language-Team: Japanese\n"
+"Language: ja_JP\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"Last-Translator: ahara121 <aharaagacco@gmail.com>\n"
+"PO-Revision-Date: 2018-04-25 10:00+0900\n"
+
+#: freetextresponse/freetextresponse.py
+msgid "Your response must be between {min} and {max} word."
+msgid_plural "Your response must be between {min} and {max} words."
+msgstr[0] "{min}〜{max}文字で記入してください。"
+msgstr[1] "{min}〜{max}文字で記入してください。"
+
+#: freetextresponse/freetextresponse.py
+msgid "Invalid Word Count. {word_count_message}"
+msgstr "{word_count_message}"
+
+#: freetextresponse/freetextresponse.py
+msgid "You have used {count_attempts} of {max_attempts} submission"
+msgid_plural "You have used {count_attempts} of {max_attempts} submissions"
+msgstr[0] "全{max_attempts}回中の{count_attempts}回の提出を既に実施"
+msgstr[1] "全{max_attempts}回中の{count_attempts}回の提出を既に実施"
+
+#: freetextresponse/freetextresponse.py
+msgid "Submission Received Message"
+msgstr "提出時メッセージ"
+
+#: freetextresponse/freetextresponse.py
+msgid "Draft Received Message"
+msgstr "保存時メッセージ"
+
+#: freetextresponse/templates/freetextresponse_view.html
+msgid "Submit Text"
+msgstr "提出"

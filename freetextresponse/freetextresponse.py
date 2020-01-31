@@ -223,11 +223,18 @@ class FreeTextResponse(
         default='',
         scope=Scope.user_state,
     )
+    is_status_managed = Boolean(
+        display_name=_("Is status managed"),
+        help=_("Please set \"True\" if you want to make it status management target module"),
+        scope=Scope.settings,
+        default=False,
+    )
 
     has_score = True
 
     editable_fields = (
         'display_name',
+        'is_status_managed',
         'prompt',
         'weight',
         'max_attempts',
@@ -295,6 +302,8 @@ class FreeTextResponse(
                 'word_count_message': self._get_word_count_message(),
                 'display_other_responses': display_other_responses,
                 'other_responses': self.get_other_answers(),
+                # update attendance status for gacco
+                'update_attendance_status': '/courses/{}/update_attendance_status',
             }
         )
         template = self.loader.render_django_template(
