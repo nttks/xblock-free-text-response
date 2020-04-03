@@ -435,7 +435,7 @@ class FreeTextResponse(
         Returns a boolean value indicating whether the current
         word count of the user's answer is valid
         """
-        word_count = len(self.student_answer.split())
+        word_count = len(self.student_answer.strip())
         result = (
             word_count <= self.max_word_count and
             word_count >= self.min_word_count
@@ -600,8 +600,9 @@ class FreeTextResponse(
             self.student_answer = data['student_answer']
             # Counting the attempts and publishing a score
             # even if word count is invalid.
-            self.count_attempts += 1
-            self._compute_score()
+            if self._word_count_valid():
+                self.count_attempts += 1
+                self._compute_score()
             display_other_responses = self.display_other_student_responses
             if display_other_responses and data.get('can_record_response'):
                 self.store_student_response()
